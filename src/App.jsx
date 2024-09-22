@@ -9,6 +9,8 @@ class App extends Component {
     this.state = {
       email: '',
       password: '',
+      hasAccount: false,
+      user: null
     };
     
     this.handleChange = this.handleChange.bind(this);
@@ -28,6 +30,7 @@ class App extends Component {
       
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      this.setState({ hasAccount: true, user: userCredential.user });
       console.log('User successfully created: ', userCredential.user);
     } catch (error) {
       console.error('Error creating user:', error);
@@ -41,6 +44,7 @@ class App extends Component {
 
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      this.setState({ hasAccount: true, user: userCredential.user });
       console.log('User successfully signed in: ', userCredential.user);
     } catch (error) {
       console.error('Error signing in:', error);
@@ -53,34 +57,44 @@ class App extends Component {
   };
 
   render() {
+    const { hasAccount, user } = this.state;
     return (
       <div>
-        <div className="login_block">
-          <input
-            type="text"
-            id="email"
-            placeholder="email"
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            id="password"
-            placeholder="password"
-            onChange={this.handleChange}
-          />
-          <input
-            className="submit"
-            type="button"
-            value="Create Account"
-            onClick={this.createAccount}
-          />
-          <input
-            className="submit"
-            type="button"
-            value="Sign In"
-            onClick={this.signIn}
-          />
-        </div>
+        { 
+          hasAccount && user ?
+          (
+            <div>Hello, {user.email}</div>
+          )
+          :
+          (<div className="login_block">
+            <input
+              type="text"
+              id="email"
+              placeholder="Email"
+              onChange={this.handleChange}
+            />
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              onChange={this.handleChange}
+            />
+            <input
+              className="submit"
+              type="button"
+              value="Create Account"
+              onClick={this.createAccount}
+            />
+            <input
+              className="submit"
+              type="button"
+              value="Sign In"
+              onClick={this.signIn}
+            />
+          </div>
+          )
+        }
+        
       </div>
     );
   }
