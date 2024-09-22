@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 class App extends Component {
   constructor(props) {
@@ -13,6 +13,7 @@ class App extends Component {
     
     this.handleChange = this.handleChange.bind(this);
     this.createAccount = this.createAccount.bind(this);
+    this.signIn = this.signIn.bind(this);
   }
 
   createAccount = async () => {
@@ -31,6 +32,19 @@ class App extends Component {
     } catch (error) {
       console.error('Error creating user:', error);
       alert('Error creating user. Please check the email and password.');
+    }
+  }
+
+  signIn = async () => {
+    try {
+      const { email, password } = this.state;
+
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('User successfully signed in: ', userCredential.user);
+    } catch (error) {
+      console.error('Error signing in:', error);
+      alert('Error signing in. Please check the email and password.');
     }
   }
 
@@ -56,8 +70,15 @@ class App extends Component {
           />
           <input
             className="submit"
-            type="submit"
+            type="button"
+            value="Create Account"
             onClick={this.createAccount}
+          />
+          <input
+            className="submit"
+            type="button"
+            value="Sign In"
+            onClick={this.signIn}
           />
         </div>
       </div>
