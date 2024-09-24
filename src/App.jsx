@@ -1,8 +1,24 @@
 import React, { Component } from 'react';
 import './App.css';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getDatabase, ref, get } from 'firebase/database';
 
 class App extends Component {
+  componentDidMount() {
+    const db = getDatabase();
+    const dbRef = ref(db, 'Name');
+    get(dbRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        this.setState({ userName: data });
+      } else {
+        console.log('Name does not exist.');
+      }
+    }).catch((error) => {
+      console.error('Error getting Name value:', error);
+    });
+  }
+
   constructor(props) {
     super(props);
     
@@ -10,7 +26,8 @@ class App extends Component {
       email: '',
       password: '',
       hasAccount: false,
-      user: null
+      user: null,
+      userName: ''
     };
     
     this.handleChange = this.handleChange.bind(this);
@@ -57,13 +74,13 @@ class App extends Component {
   };
 
   render() {
-    const { hasAccount, user } = this.state;
+    const { hasAccount, user, userName } = this.state;
     return (
       <div>
         { 
           hasAccount && user ?
           (
-            <div>Hello, {user.email}</div>
+            <div>Hello, {user.displayName ? user.displayName : userName}</div>
           )
           :
           (<div className="login_block">
